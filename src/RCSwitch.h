@@ -59,13 +59,13 @@
 // Number of maximum high/Low changes per packet.
 // We can handle up to (unsigned long) => 32 bit * 2 H/L changes per bit + 2 for sync
 // Для keeloq нужно увеличить RCSWITCH_MAX_CHANGES до 23+1+66*2+1=157
-#define RCSWITCH_MAX_CHANGES 67        // default 67
+#define RCSWITCH_MAX_CHANGES 132
 
 class RCSwitch {
 
   public:
     RCSwitch();
-    
+
     void switchOn(int nGroupNumber, int nSwitchNumber);
     void switchOff(int nGroupNumber, int nSwitchNumber);
     void switchOn(const char* sGroup, int nSwitchNumber);
@@ -163,13 +163,13 @@ class RCSwitch {
 
     #if not defined( RCSwitchDisableReceiving )
     static void handleInterrupt();
-    static bool receiveProtocol(const int p, unsigned int changeCount);
+    static bool receiveProtocol(unsigned int changeCount);
     int nReceiverInterrupt;
     #endif
     int nTransmitterPin;
     int nRepeatTransmit;
     
-    Protocol protocol;
+    static Protocol protocol;
 
     #if not defined( RCSwitchDisableReceiving )
     static int nReceiveTolerance;
@@ -177,7 +177,7 @@ class RCSwitch {
     volatile static unsigned int nReceivedBitlength;
     volatile static unsigned int nReceivedDelay;
     volatile static unsigned int nReceivedProtocol;
-    const static unsigned int nSeparationLimit;
+    static unsigned int nSeparationLimit;
     /* 
      * timings[0] contains sync timing, followed by a number of bits
      */
@@ -199,6 +199,8 @@ class Keeloq {
     void NormLearn(unsigned long FixSN);
     unsigned long ReflectPack(unsigned long PackSrc);
   private:
+    unsigned long bitRead(unsigned long byte, int position);
+
     unsigned long _keyHigh;
     unsigned long _keyLow;
 };
